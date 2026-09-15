@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapallo, 15–19 September</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+  :root{
+    --sea: #1b4f5c;
+    --sea-deep: #0e3038;
+    --limestone: #f2ece0;
+    --limestone-dark: #e6ddc9;
+    --lemon: #e0a52a;
+    --coral: #c1573a;
+    --ink: #23302f;
+    --line: #d8cfba;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--limestone);
+    color: var(--ink);
+    font-family: 'Source Sans 3', sans-serif;
+    line-height: 1.5;
+  }
+
+  h1,h2,h3,.display{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--sea-deep);
+    margin: 0;
+  }
+
+  .wrap{ max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* Hero */
+  header.hero{
+    background: linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
+    color: var(--limestone);
+    padding: 52px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; right:-40px; top:-40px;
+    width:220px; height:220px; border-radius:50%;
+    background: radial-gradient(circle, rgba(224,165,42,0.35), transparent 70%);
+  }
+  .hero-inner{ max-width:760px; margin:0 auto; position:relative; }
+  .eyebrow{
+    color: var(--lemon);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+  }
+  header.hero h1{
+    color: var(--limestone);
+    font-size: clamp(2.3rem, 7vw, 3.4rem);
+    line-height: 1.05;
+    max-width: 11ch;
+  }
+  .hero-dates{
+    margin-top: 16px;
+    font-size: 1.1rem;
+    color: rgba(242,236,224,0.85);
+  }
+  .hero-meta{
+    display:flex; gap: 26px; margin-top: 28px; flex-wrap: wrap;
+  }
+  .hero-meta div{ font-size: 0.92rem; color: rgba(242,236,224,0.75); }
+  .hero-meta strong{
+    display:block; font-family:'Fraunces',serif; font-weight:600;
+    font-size:1.5rem; color: var(--limestone);
+  }
+
+  /* Day nav */
+  nav.daynav{
+    display:flex; overflow-x:auto; gap: 6px;
+    padding: 14px 20px; background: var(--limestone-dark);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top:0; z-index: 10;
+  }
+  nav.daynav a{
+    flex: 0 0 auto;
+    padding: 7px 14px;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--sea-deep);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  nav.daynav a:hover{ background: var(--sea); color: var(--limestone); border-color: var(--sea); }
+
+  /* Day sections */
+  section.day{
+    padding-top: 44px;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 60px;
+  }
+  section.day:first-of-type{ border-top: none; }
+
+  .day-head{
+    display:flex; align-items:baseline; gap: 14px; margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .day-num{
+    font-family:'Fraunces',serif; font-weight:600; font-size: 2.1rem; color: var(--coral);
+  }
+  .day-head h2{ font-size: 1.5rem; }
+  .day-sub{ color:#6b6155; font-size:0.95rem; margin-bottom: 24px; }
+
+  .options{
+    display:grid; gap: 16px; margin-bottom: 22px;
+  }
+  @media(min-width: 620px){
+    .options.two{ grid-template-columns: 1fr 1fr; }
+  }
+
+  .card{
+    background:#fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+  .card h3{
+    font-size: 1rem;
+    color: var(--sea-deep);
+    margin-bottom: 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .tag{
+    display:inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--coral);
+    border: 1px solid var(--coral);
+    border-radius: 20px;
+    padding: 1px 9px;
+  }
+  .tag.blue{ color: var(--sea); border-color: var(--sea); }
+  .tag.lemon{ color: #8a6415; border-color: var(--lemon); background: rgba(224,165,42,0.12);}
+
+  .timeline{ margin: 0; padding: 0; list-style:none; }
+  .timeline li{
+    display:grid;
+    grid-template-columns: 74px 1fr;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 0.95rem;
+  }
+  .timeline li:last-child{ border-bottom:none; }
+  .timeline .time{
+    color: var(--coral); font-weight:600; font-size:0.85rem; padding-top:2px;
+  }
+
+  .foodblock{
+    background: var(--limestone-dark);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-top: 6px;
+  }
+  .foodblock h4{
+    margin:0 0 10px; font-family:'Fraunces',serif; font-weight:600;
+    font-size:1rem; color: var(--sea-deep);
+  }
+  .foodrow{
+    display:flex; justify-content:space-between; gap: 12px;
+    padding: 6px 0; font-size:0.92rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .foodrow:last-child{ border-bottom:none; }
+  .foodrow .meal{ color:#6b6155; min-width: 62px; }
+  .foodrow .cost{ color: var(--coral); font-weight:600; white-space:nowrap; }
+
+  .note{
+    font-size: 0.88rem; color:#6b6155; margin-top: 12px;
+    padding-left: 14px; border-left: 3px solid var(--lemon);
+  }
+
+  /* Cinque Terre detail */
+  .ct-steps{ margin:0; padding:0; list-style:none; }
+  .ct-steps li{
+    display:grid; grid-template-columns: 100px 1fr; gap: 16px;
+    padding: 16px 0; border-bottom: 1px solid var(--line);
+  }
+  .ct-steps li:last-child{ border-bottom:none; }
+  .ct-time{ font-family:'Fraunces',serif; font-weight:600; color:var(--sea); font-size:1rem; }
+  .ct-steps h4{ margin:0 0 4px; font-size:1.02rem; color:var(--sea-deep); font-family:'Fraunces',serif; font-weight:600;}
+  .ct-steps p{ margin:0; font-size:0.92rem; color:#4a443c; }
+
+  .totalbar{
+    display:flex; justify-content:space-between; align-items:center;
+    background: var(--sea-deep); color: var(--limestone);
+    border-radius: 4px; padding: 16px 20px; margin-top: 30px;
+  }
+  .totalbar .label{ font-size:0.85rem; color: rgba(242,236,224,0.7); }
+  .totalbar .amount{ font-family:'Fraunces',serif; font-size:1.6rem; font-weight:600; color: var(--lemon); }
+
+  table.summary{
+    width:100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;
+  }
+  table.summary th, table.summary td{
+    text-align:left; padding: 9px 10px; border-bottom: 1px solid var(--line);
+  }
+  table.summary th{ color:#6b6155; font-weight:600; font-size:0.8rem; }
+  table.summary td.amt{ text-align:right; color: var(--coral); font-weight:600; }
+
+  footer{
+    padding: 40px 20px 60px; text-align:center; color:#8a8071; font-size:0.85rem;
+  }
+
+  /* Map section */
+  .maplink{
+    display:inline-flex; align-items:center; gap:8px;
+    margin-top: 18px; padding: 8px 16px;
+    background: rgba(224,165,42,0.15);
+    border: 1px solid var(--lemon);
+    border-radius: 20px;
+    color: var(--limestone);
+    text-decoration:none;
+    font-size:0.9rem; font-weight:600;
+  }
+  .maplink:hover{ background: rgba(224,165,42,0.28); }
+
+  #map{
+    width: 100%; height: 420px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  .legend{
+    display:flex; flex-wrap:wrap; gap: 8px;
+    margin-top: 14px; font-size: 0.85rem;
+  }
+  .legend button{
+    display:flex; align-items:center; gap:7px;
+    font-family: inherit; font-size: 0.85rem;
+    background:#fff; border: 1px solid var(--line);
+    border-radius: 20px; padding: 6px 13px;
+    cursor:pointer; color: var(--ink);
+  }
+  .legend button:hover{ border-color: var(--sea); }
+  .legend button.active{
+    background: var(--sea-deep); color: var(--limestone); border-color: var(--sea-deep);
+  }
+  .legend button.active i{ box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
+  .legend i{
+    width: 11px; height: 11px; border-radius: 50%; display:inline-block;
+  }
+
+  .place-list{
+    margin-top: 16px;
+    display: none;
+  }
+  .place-list.show{ display:block; }
+  .place-list ol{ margin:0; padding:0; list-style:none; }
+  .place-list li{
+    display:flex; align-items:flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+    font-size: 0.92rem;
+  }
+  .place-list li:last-child{ border-bottom:none; }
+  .place-list .num{
+    flex: 0 0 auto;
+    width: 22px; height: 22px; border-radius: 50%;
+    color: #fff; font-size: 0.78rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Fraunces', serif;
+  }
+  .place-list strong{ display:block; color: var(--sea-deep); }
+  .place-list span.desc{ color:#6b6155; font-size:0.87rem; }
+
+  /* Custom divIcon pins for home & station */
+  .pin-icon{
+    width: 34px; height: 34px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+  }
+  .pin-icon span{
+    transform: rotate(45deg);
+    font-size: 16px;
+    line-height:1;
+  }
+  .num-icon{
+    width: 24px; height: 24px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:12px;
+    border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Italian Riviera</div>
+    <h1>Rapallo</h1>
+    <div class="hero-dates">15 – 19 September 2026 · Family of four</div>
+    <div class="hero-meta">
+      <div><strong>3</strong>full days</div>
+      <div><strong>2</strong>arrival &amp; departure</div>
+      <div><strong>1</strong>day trip</div>
+    </div>
+    <a class="maplink" href="#map-section">See all spots on the map ↓</a>
+  </div>
+</header>
+
+<nav class="daynav">
+  <a href="#map-section">Map</a>
+  <a href="#tue15">Tue 15</a>
+  <a href="#wed16">Wed 16</a>
+  <a href="#thu17">Thu 17</a>
+  <a href="#fri18">Fri 18</a>
+  <a href="#sat19">Sat 19</a>
+  <a href="#budget">Budget</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- MAP -->
+  <section class="day" id="map-section" style="border-top:none; padding-top:36px;">
+    <div class="day-head">
+      <h2>Rapallo, at a glance</h2>
+    </div>
+    <div class="day-sub">Restaurants, cafes, bakeries and markets from the itinerary</div>
+    <div id="map"></div>
+    <div class="legend" id="legend">
+      <button data-type="all" class="active"><i style="background:#555;"></i>All</button>
+      <button data-type="home"><i style="background:#7a4f8c;"></i>Apartment</button>
+      <button data-type="station"><i style="background:#2f6b3a;"></i>Train station</button>
+      <button data-type="restaurant"><i style="background:#c1573a;"></i>Restaurants</button>
+      <button data-type="cafe"><i style="background:#1b4f5c;"></i>Cafes &amp; bakeries</button>
+      <button data-type="market"><i style="background:#e0a52a;"></i>Markets</button>
+    </div>
+    <div class="place-list" id="place-list"></div>
+  </section>
+
+  <!-- TUE 15 -->
+  <section class="day" id="tue15">
+    <div class="day-head">
+      <span class="day-num">15</span>
+      <h2>Tuesday — Arrival</h2>
+    </div>
+    <div class="day-sub">Afternoon arrival · settle in · easy first evening</div>
+
+    <div class="card">
+      <h3>Around town</h3>
+      <ul class="timeline">
+        <li><span class="time">Afternoon</span><span>Check in and settle in</span></li>
+        <li><span class="time">Late aft.</span><span>Stroll the seafront promenade to <strong>Rapallo Castle</strong>, then wander through <strong>Porta delle Saline</strong>, the old town gate</span></li>
+      </ul>
+    </div>
+
+    <div class="foodblock">
+      <h4>Food</h4>
+      <div class="foodrow"><span class="meal">Dinner</span><span>Hostaria Vecchia Rapallo — cozy trattoria, fresh fish</span><span class="cost">€100–140</span></div>
+    </div>
+  </section>
+
+  <!-- WED 16 -->
+  <section class="day" id="wed16">
+    <div class="day-head">
+      <span class="day-num">16</span>
+      <h2>Wednesday</h2>
+    </div>
+    <div class="day-sub">Choose one — local sightseeing or the Camogli / San Fruttuoso outing</div>
+
+    <div class="options two">
+      <div class="card">
+        <h3><span class="tag blue">Option A</span> Rapallo &amp; beach</h3>
+        <ul class="timeline">
+          <li><span class="time">Morning</span><span>Old town wander</span></li>
+          <li><span class="time">Late morn.</span><span>Cable car up to <strong>Santuario di Montallegro</strong> for the views</span></li>
+          <li><span class="time">Afternoon</span><span>Beach time — Public Beach San Michele or Stella Beach (pebbly, bring water shoes)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag">Option B</span> Camogli &amp; San Fruttuoso</h3>
+        <ul class="timeline">
+          <li><span class="time">Morning</span><span>Train to <strong>Camogli</strong></span></li>
+          <li><span class="time">Midday</span><span>Hike to <strong>San Fruttuoso Abbey</strong>, swim in the cove</span></li>
+          <li><span class="time">Afternoon</span><span>Scenic ferry back to Rapallo</span></li>
+        </ul>
+        <div class="note">Lighter pace than Cinque Terre — good swimming, less walking overall.</div>
+      </div>
+    </div>
+
+    <div class="foodblock">
+      <h4>Food</h4>
+      <div class="foodrow"><span class="meal">Morning</span><span>Bakery Tossini + Pasticceria Vivaldi (closes 1pm) — best focaccia in town</span><span class="cost">€20–25</span></div>
+      <div class="foodrow"><span class="meal">Lunch</span><span>Highway Burger</span><span class="cost">€45–55</span></div>
+      <div class="foodrow"><span class="meal">Dinner</span><span>Rocco e i suoi fratelli — seafood</span><span class="cost">€160–220</span></div>
+    </div>
+  </section>
+
+  <!-- THU 17 -->
+  <section class="day" id="thu17">
+    <div class="day-head">
+      <span class="day-num">17</span>
+      <h2>Thursday — Market Day</h2>
+    </div>
+    <div class="day-sub">Seafront market runs 9am–1pm, easy to combine with either plan</div>
+
+    <div class="options two">
+      <div class="card">
+        <h3><span class="tag blue">Option A</span> Market + Portofino</h3>
+        <ul class="timeline">
+          <li><span class="time">9–1pm</span><span><strong>Mercato Rapallo</strong>, seafront — clothes, local food stalls</span></li>
+          <li><span class="time">Afternoon</span><span>Ferry to <strong>Portofino</strong>, harbor wander</span></li>
+          <li><span class="time">Optional</span><span>Walk the Passeggiata dei Baci, Paraggi–Portofino</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag lemon">Option B</span> Buffer day</h3>
+        <p style="font-size:0.92rem; margin:0 0 8px;">Keep this flexible if a day trip lands on the 16th or 18th instead — the market alone wraps by 1pm and leaves the rest of the day open.</p>
+      </div>
+    </div>
+
+    <div class="foodblock">
+      <h4>Food</h4>
+      <div class="foodrow"><span class="meal">Morning</span><span>Market food stalls</span><span class="cost">€20–30</span></div>
+      <div class="foodrow"><span class="meal">Lunch</span><span>Osteria Vecchio Mulino — rustic mill, fresh pasta</span><span class="cost">€100–130</span></div>
+      <div class="foodrow"><span class="meal">Aft.</span><span>Wine stop, Big Market di Canale Renzo</span><span class="cost">€20–40</span></div>
+      <div class="foodrow"><span class="meal">Dinner</span><span>Armida 1905 — lemon risotto, top-rated</span><span class="cost">€160–220</span></div>
+    </div>
+  </section>
+
+  <!-- FRI 18 -->
+  <section class="day" id="fri18">
+    <div class="day-head">
+      <span class="day-num">18</span>
+      <h2>Friday — Cinque Terre</h2>
+    </div>
+    <div class="day-sub">Early start locked in · 7am departure</div>
+
+    <div class="card" style="margin-bottom:22px;">
+      <h3>Getting there</h3>
+      <p style="font-size:0.92rem; margin:0 0 8px;">Direct trains run roughly every 20–30 minutes through the morning. Journey time is 30–55 minutes depending on train type. Buy the <strong>Cinque Terre Train Card</strong> at Monterosso station on arrival — unlimited hop-on trains between villages for the day (€5–10/adult, kids 4–11 half price).</p>
+      <div class="note">Timetables are only published 3–4 months ahead — confirm the exact 7am service on the Trenitalia app closer to the date.</div>
+    </div>
+
+    <ul class="ct-steps">
+      <li>
+        <div class="ct-time">7:00</div>
+        <div><h4>Train to Monterosso</h4><p>Rapallo → Monterosso, arriving roughly 7:45–8:00am, ahead of the crowds</p></div>
+      </li>
+      <li>
+        <div class="ct-time">7:45</div>
+        <div><h4>Monterosso al Mare</h4><p>The only village with a proper sandy beach — early dip if anyone's keen, coffee and pastry, wander the old town and Castello Aurora viewpoint</p></div>
+      </li>
+      <li>
+        <div class="ct-time">10:00</div>
+        <div><h4>Vernazza</h4><p>4-minute train hop. The most photogenic village — harbor, colorful houses, climb to Doria Castle for the classic view</p></div>
+      </li>
+      <li>
+        <div class="ct-time">11:30</div>
+        <div><h4>Manarola — lunch</h4><p>Casual seafood along the harbor, then photos at the rocks or a short walk up the vineyard path. Corniglia can be skipped — it sits high on a cliff with no direct sea access</p></div>
+      </li>
+      <li>
+        <div class="ct-time">13:30</div>
+        <div><h4>Riomaggiore</h4><p>Colorful cliffside houses, gelato, souvenir browsing. If the <strong>Via dell'Amore</strong> coastal path to Manarola is open, it's the flattest and most scenic walk in Cinque Terre — worth checking on arrival</p></div>
+      </li>
+      <li>
+        <div class="ct-time">16:00</div>
+        <div><h4>Head back</h4><p>Train toward Rapallo — may involve a change at Sestri Levante depending on the specific service</p></div>
+      </li>
+      <li>
+        <div class="ct-time">17:00</div>
+        <div><h4>Back in Rapallo</h4><p>Time to freshen up before dinner</p></div>
+      </li>
+    </ul>
+
+    <div class="note" style="margin-top:18px;">Comfortable shoes for the stairs in every village, swimsuits and towels for Monterosso/Riomaggiore, and sun protection — little shade in peak afternoon. If everyone's tired, it's easy to cut Riomaggiore and linger longer in Vernazza or Manarola instead.</div>
+
+    <div class="foodblock" style="margin-top:20px;">
+      <h4>Food</h4>
+      <div class="foodrow"><span class="meal">Lunch</span><span>Manarola harborside seafood</span><span class="cost">included above</span></div>
+      <div class="foodrow"><span class="meal">Dinner</span><span>Le Cupole — fine dining splurge, book ahead, opens 7:30pm</span><span class="cost">€500–700+</span></div>
+      <div class="foodrow"><span class="meal">Swap</span><span>Il Salotto — mid-range alternative if skipping the splurge</span><span class="cost">€160–220</span></div>
+    </div>
+  </section>
+
+  <!-- SAT 19 -->
+  <section class="day" id="sat19">
+    <div class="day-head">
+      <span class="day-num">19</span>
+      <h2>Saturday — Departure</h2>
+    </div>
+    <div class="day-sub">Morning departure</div>
+
+    <div class="foodblock">
+      <h4>Food</h4>
+      <div class="foodrow"><span class="meal">Morning</span><span>Coffee &amp; pastry before heading out — Patley Bistrot or Bakery Tossini</span><span class="cost">€25–35</span></div>
+    </div>
+  </section>
+
+  <!-- BUDGET -->
+  <section class="day" id="budget">
+    <div class="day-head">
+      <span class="day-num">€</span>
+      <h2>Rough costs</h2>
+    </div>
+    <div class="day-sub">2 adults, 2 teenagers — food only, drinks and extras vary</div>
+
+    <table class="summary">
+      <tr><th>Day</th><th></th><th>Range</th></tr>
+      <tr><td>Tue 15 — arrival evening</td><td></td><td class="amt">€100–140</td></tr>
+      <tr><td>Wed 16 — full day</td><td></td><td class="amt">€225–300</td></tr>
+      <tr><td>Thu 17 — market day</td><td></td><td class="amt">€300–420</td></tr>
+      <tr><td>Fri 18 — Cinque Terre + splurge dinner</td><td></td><td class="amt">€665–920</td></tr>
+      <tr><td>Fri 18 — with mid-range swap instead</td><td></td><td class="amt">€295–350</td></tr>
+      <tr><td>Sat 19 — departure morning</td><td></td><td class="amt">€25–35</td></tr>
+    </table>
+
+    <div class="totalbar">
+      <div>
+        <div class="label">Trip total, with Le Cupole splurge</div>
+        <div class="amount">€1,315 – 1,815</div>
+      </div>
+    </div>
+    <div class="totalbar" style="margin-top:12px; background:#2a2018;">
+      <div>
+        <div class="label">Trip total, mid-range swap instead</div>
+        <div class="amount">€945 – 1,245</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Rapallo · 15–19 September 2026</footer>
+<script>
+  var places = [
+    {name:"Apartment — Piazza della Chiappa 2", type:"home", lat:44.3492631, lng:9.2310809, note:"Your stay for the trip"},
+    {name:"Rapallo Train Station", type:"station", lat:44.3514010, lng:9.231289, note:"Trains to Cinque Terre, Camogli & beyond"},
+    {name:"Bar Colombo", type:"restaurant", lat:44.3471399, lng:9.2271412, note:"Budget - sandwiches & pasta"},
+    {name:"Pizza Si", type:"restaurant", lat:44.3531056, lng:9.2158208, note:"Budget - well-priced pizza"},
+    {name:"Highway Burger", type:"restaurant", lat:44.3489111, lng:9.2333168, note:"Budget - locally loved burgers"},
+    {name:"Osteria Vecchio Mulino", type:"restaurant", lat:44.3490044, lng:9.1884361, note:"Mid-range - rustic mill, fresh pasta"},
+    {name:"Hostaria Vecchia Rapallo", type:"restaurant", lat:44.3486017, lng:9.2296793, note:"Mid-range - cozy trattoria, fresh fish"},
+    {name:"Rocco e i suoi fratelli", type:"restaurant", lat:44.3488119, lng:9.230065, note:"Higher-end - Sicilian seafood"},
+    {name:"Armida 1905", type:"restaurant", lat:44.3492485, lng:9.2328021, note:"Higher-end - lemon risotto"},
+    {name:"Il Salotto - Food & Cocktails", type:"restaurant", lat:44.3483843, lng:9.2297075, note:"Higher-end - elegant seafront tasting menus"},
+    {name:"Le Cupole", type:"restaurant", lat:44.3435052, lng:9.2446986, note:"Splurge - fine dining with views"},
+    {name:"Rapalà", type:"restaurant", lat:44.3492782, lng:9.2329426, note:"Seafood, mini octopus"},
+    {name:"Patley Bistrot", type:"cafe", lat:44.3502825, lng:9.2305338, note:"Cozy, near station, great breakfast"},
+    {name:"eldòlz Pasticceria - Gelateria", type:"cafe", lat:44.3491431, lng:9.231011, note:"Big breakfast menu, gelato"},
+    {name:"Caffè Pasticceria Canepa 1862", type:"cafe", lat:44.3488729, lng:9.2334437, note:"Historic cafe, mini pastries"},
+    {name:"Pasticceria Vivaldi", type:"cafe", lat:44.3496905, lng:9.2291266, note:"Famous focaccia al formaggio"},
+    {name:"Bakery Tossini", type:"cafe", lat:44.3501545, lng:9.2307199, note:"Best focaccia in town"},
+    {name:"Pasticceria La Riviera", type:"cafe", lat:44.3492888, lng:9.2278728, note:"Cheap pastries, English spoken"},
+    {name:"Mercato Rapallo (Thursday Market)", type:"market", lat:44.3493899, lng:9.2310112, note:"Weekly market, Thu 9am-1pm"},
+    {name:"Big Market di Canale Renzo", type:"market", lat:44.3514966, lng:9.2260122, note:"Wine shop / enoteca"},
+    {name:"Despar Market", type:"market", lat:44.3518109, lng:9.2329842, note:"Everyday grocery"},
+    {name:"Carrefour Market", type:"market", lat:44.3501766, lng:9.2329842, note:"Larger supermarket"}
+  ];
+
+  var colors = { restaurant: "#c1573a", cafe: "#1b4f5c", market: "#e0a52a", home: "#7a4f8c", station: "#2f6b3a" };
+  var symbols = { home: "\ud83c\udfe0", station: "\ud83d\ude86" };
+
+  var counters = {};
+  places.forEach(function(p){
+    if(p.type === 'home' || p.type === 'station') return;
+    counters[p.type] = (counters[p.type] || 0) + 1;
+    p.num = counters[p.type];
+  });
+
+  function pinIcon(type){
+    return L.divIcon({
+      className: '',
+      html: '<div class="pin-icon" style="background:' + colors[type] + ';"><span>' + symbols[type] + '</span></div>',
+      iconSize: [34, 34],
+      iconAnchor: [17, 34],
+      popupAnchor: [0, -30]
+    });
+  }
+
+  function numIcon(type, num){
+    return L.divIcon({
+      className: '',
+      html: '<div class="num-icon" style="background:' + colors[type] + ';">' + num + '</div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -12]
+    });
+  }
+
+  function initMap(){
+    var map = L.map('map', { scrollWheelZoom: false }).setView([44.3495, 9.2295], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    places.forEach(function(p){
+      var icon = (p.type === 'home' || p.type === 'station') ? pinIcon(p.type) : numIcon(p.type, p.num);
+      p.marker = L.marker([p.lat, p.lng], { icon: icon }).addTo(map);
+      p.marker.bindPopup('<strong>' + p.name + '</strong><br>' + p.note);
+    });
+
+    setTimeout(function(){ map.invalidateSize(); }, 200);
+
+    var listEl = document.getElementById('place-list');
+    var buttons = document.querySelectorAll('#legend button');
+
+    function showCategory(type){
+      buttons.forEach(function(b){ b.classList.toggle('active', b.dataset.type === type); });
+
+      places.forEach(function(p){
+        var visible = (type === 'all') || (p.type === type);
+        var el = p.marker.getElement();
+        if(el) el.style.display = visible ? '' : 'none';
+      });
+
+      if(type === 'all'){
+        listEl.classList.remove('show');
+        listEl.innerHTML = '';
+        return;
+      }
+
+      var items = places.filter(function(p){ return p.type === type; });
+      var html = '<ol>' + items.map(function(p){
+        return '<li><span class="num" style="background:' + colors[type] + ';">' + (p.num || '\u2022') + '</span>' +
+          '<div><strong>' + p.name + '</strong><span class="desc">' + p.note + '</span></div></li>';
+      }).join('') + '</ol>';
+      listEl.innerHTML = html;
+      listEl.classList.add('show');
+    }
+
+    buttons.forEach(function(b){
+      b.addEventListener('click', function(){ showCategory(b.dataset.type); });
+    });
+  }
+
+  if (typeof L !== 'undefined') {
+    initMap();
+  } else {
+    window.addEventListener('load', initMap);
+  }
+</script>
+
+</body>
+</html>
